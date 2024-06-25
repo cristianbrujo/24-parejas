@@ -55,5 +55,14 @@ body {
 }
 
 .back {
-  background-color: red;
+  background-color: rgb(0, 255, 85);
+}
+
+
+.purple {
+  background-color: purple;
+}
+
+.amarillo {
+  background-color: rgb(230, 215, 13);
 }
