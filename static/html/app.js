@@ -1,93 +1,84 @@
-function flipCard() {
+let lockboard = false   // Bloqueo de Tablero
+let firstcard = null
+let secondcard = null
+let matches = 0;         //Partidos
+let gamesWon = 0;        //Juegos Ganados
+let timer;               // Tiempo
+let seconds = 0;         // Segundos
+let tiemporeaccion = 500 // Milisegundos
+
+function flipcard() {    //Controla la lógica de voltear las cartas y verifica coincidencias.
     if (lockboard) return;
-    if (this === firstCard) return;
+    if (this === firstcard) return;
 
     this.classList.toggle('flip');
 
-    if (!firstCard) {
-        firstCard = this;
+    if (!firstcard) {
+        firstcard = this;
         return;
     }
 
-    secondCard = this;
+    secondcard = this;
     lockboard = true;
 
-    checkForMatch();
+    checkForMatch();  //Comprobar si hay coincidencia
 }
 
 function checkForMatch() {
-    const isMatch = firstCard.dataset.name === secondCard.dataset.name;
+    if (firstcard.dataset.name === undefined) {alert("error firstcard name undefined")}
+    if (secondcard.dataset.name === undefined) {alert("error firstcard name undefined")}
 
-    isMatch ? disableCards() : unflipCards();
+    const isMatch = firstcard.dataset.name === secondcard.dataset.name;
+    isMatch ? disablecards() : unflipcards();
     // igualar, desactivar cartas : deshacer cartas
 }
 
-function disableCards() {
-    firstCard.removeEventListener('click', flipCard);
-    secondCard.removeEventListener('click', flipCard);
+function disablecards() {     //Deshabilita las cartas si coinciden y verifica si se ha ganado la partida.
+    firstcard.removeEventListener('click', flipcard);
+    secondcard.removeEventListener('click', flipcard);
 
     resetBoard();
 }
 
-function unfliCards() {
-    setTimeout(() => {
-
-    firstCard.removeEventListener('click', flipCard);
-    secondCard.removeEventListener('click', flipCard);
-
-    resetBoard();
-
-    }, 16);
+function unflipcards() {    //Voltea de nuevo las cartas si no coinciden.
+    setTimeout(() => {     // Establecer tiempo espera.
+        firstcard.classList.remove('flip');
+        secondcard.classList.remove('flip');
+        resetBoard();
+    }, tiemporeaccion);
 
 }
 
 function resetBoard() {
-    [firstCard, secondCard] = [null, null];
+    [firstcard, secondcard] = [null, null];
     lockboard = false;
 }
 
-
-
-const cards = document.querySelectorAll('.memory-card');
-cards.forEach(card => card.addEventListener('click', flipCard));
-
 const cardsPareja = [
-    { Card: "A", img: "A", class: "purple" },
-    { Card: "B", img: "B", class: "amarillo" },
-    { Card: "C", img: "C", class: "naranja"},
-    { Card: "D", img: "D", class: "azul"},
-    { Card: "A", img: "A", class: "purple" },
-    { Card: "B", img: "B", class: "amarillo" },
-    { Card: "C", img: "C", class: "naranja" },
-    { Card: "D", img: "D", class: "azul" },
+    { card: "A", class: "purple" },
+    { card: "A", class: "purple" },
+    { card: "B", class: "amarillo" },
+    { card: "B", class: "amarillo" },
+    { card: "C", class: "naranja" },
+    { card: "C", class: "naranja" },
+    { card: "D", class: "azul" },
+    { card: "D", class: "azul" },
+    { card: "E", class: "rojo" },
+    { card: "E", class: "rojo" },
+    { card: "F", class: "verde" },
+    { card: "F", class: "verde" },
+    { card: "G", class: "gris" },
+    { card: "G", class: "gris" },
+    { card: "H", class: "rosa" },
+    { card: "H", class: "rosa" },
 ];
 
+document.querySelectorAll('.memory-card').forEach((card) => {
 
-cards.forEach((card) => {
+    card.addEventListener('click', flipcard)
+
     var item = cardsPareja.pop()
+    if (item == undefined) return
     card.children[0].classList.add(item.class)
-    card.innerHTML += item.Card
+    card.innerHTML += item.card
 });
-
-
-
-// cards.
-/*
-let firstCard = null;
-let SecondCard = null;
-let lockBoard = false;
-
-const gameBoard = document.getElementById(" game-board");
-cardsPareja.sort(() => 0.5 - Math.random());
-
-cardsPareja.forEach((card, index));
-const cardElement = document.createElement("div");
-cardElement.classList.add("card");
-cardElement.dataset.name = card.name;
-cardElement.dataset.id = index;
-cardElement.innerHTML = `
-    <div class = "front">${card.img}</div>
-    <div class = "back">?</div>
-    `;
-cardElement.addEventListener
-*/
