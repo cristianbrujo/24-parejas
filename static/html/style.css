@@ -10,6 +10,10 @@ body {
   background: #060AB2;
 }
 
+.game-info {
+  margin-bottom: 20px;
+}
+
 .memory-game {
   width: 640px;
   height: 640px;

@@ -1,84 +1,130 @@
-let lockboard = false   // Bloqueo de Tablero
-let firstcard = null
-let secondcard = null
-let matches = 0;         //Partidos
-let gamesWon = 0;        //Juegos Ganados
-let timer;               // Tiempo
-let seconds = 0;         // Segundos
-let tiemporeaccion = 500 // Milisegundos
+function juegoDeLasParejas() {
 
-function flipcard() {    //Controla la lógica de voltear las cartas y verifica coincidencias.
-    if (lockboard) return;
-    if (this === firstcard) return;
+    const tiemporeaccion = 500 // Milisegundos
+    const cardsPareja = [
+        { card: "A", class: "purple" },
+        { card: "A", class: "purple" },
+        { card: "B", class: "amarillo" },
+        { card: "B", class: "amarillo" },
+        { card: "C", class: "naranja" },
+        { card: "C", class: "naranja" },
+        { card: "D", class: "azul" },
+        { card: "D", class: "azul" },
+        { card: "E", class: "rojo" },
+        { card: "E", class: "rojo" },
+        { card: "F", class: "verde" },
+        { card: "F", class: "verde" },
+        { card: "G", class: "gris" },
+        { card: "G", class: "gris" },
+        { card: "H", class: "rosa" },
+        { card: "H", class: "rosa" },
+    ];
+    const totalParejas = cardsPareja.length / 2
 
-    this.classList.toggle('flip');
+    let lockboard = false   // Bloqueo de Tablero
+    let firstcard = null
+    let secondcard = null
+    let matches = 0;         //Partidos
+    let gamesWon = 0;        //Juegos Ganados
+    let timer;               // Tiempo
+    let seconds = 0;         // Segundos
 
-    if (!firstcard) {
-        firstcard = this;
-        return;
+    function createBoard() {
+        const gameBoard = document.getElementById('game-board');
+        gameBoard.innerHTML = ''; // Limpia el tablero antes de crearlo
+        cardsPareja.sort(() => 0.5 - Math.random());
+
+        matches = 0;
+        startTimer();
     }
 
-    secondcard = this;
-    lockboard = true;
+    function flipcard() {    //Controla la lógica de voltear las cartas y verifica coincidencias.
+        if (lockboard) return;
+        if (this === firstcard) return;
 
-    checkForMatch();  //Comprobar si hay coincidencia
-}
+        this.classList.toggle('flip');
 
-function checkForMatch() {
-    if (firstcard.dataset.name === undefined) {alert("error firstcard name undefined")}
-    if (secondcard.dataset.name === undefined) {alert("error firstcard name undefined")}
+        if (!firstcard) {
+            firstcard = this;
+            return;
+        }
 
-    const isMatch = firstcard.dataset.name === secondcard.dataset.name;
-    isMatch ? disablecards() : unflipcards();
-    // igualar, desactivar cartas : deshacer cartas
-}
+        secondcard = this;
+        lockboard = true;
 
-function disablecards() {     //Deshabilita las cartas si coinciden y verifica si se ha ganado la partida.
-    firstcard.removeEventListener('click', flipcard);
-    secondcard.removeEventListener('click', flipcard);
+        checkForMatch();  //Comprobar si hay coincidencia
+    }
 
-    resetBoard();
-}
+    function checkForMatch() {
+        if (firstcard.dataset.name === undefined) { alert("error firstcard name undefined") }
+        if (secondcard.dataset.name === undefined) { alert("error firstcard name undefined") }
 
-function unflipcards() {    //Voltea de nuevo las cartas si no coinciden.
-    setTimeout(() => {     // Establecer tiempo espera.
-        firstcard.classList.remove('flip');
-        secondcard.classList.remove('flip');
+        const isMatch = firstcard.dataset.name === secondcard.dataset.name;
+        isMatch ? disablecards() : unflipcards();
+        // igualar, desactivar cartas : deshacer cartas
+    }
+
+    function disablecards() {     //Deshabilita las cartas si coinciden y verifica si se ha ganado la partida.
+        firstcard.removeEventListener('click', flipcard);
+        secondcard.removeEventListener('click', flipcard);
+
+        matches++;
+        if (matches === totalParejas) {
+            endGame();
+        }
+
         resetBoard();
-    }, tiemporeaccion);
+    }
 
+    function unflipcards() {    //Voltea de nuevo las cartas si no coinciden.
+        setTimeout(() => {     // Establecer tiempo espera.
+            firstcard.classList.remove('flip');
+            secondcard.classList.remove('flip');
+
+            resetBoard();
+        }, tiemporeaccion);
+
+    }
+
+    function resetBoard() {    //Tablero de Reinicio
+        [firstcard, secondcard] = [null, null];
+        lockboard = false;
+    }
+
+    function startTimer() {    //Comienzo del Tiempo
+        clearInterval(timer);  //Intervalo de limpieza
+        seconds = 0;
+        document.getElementById('game-timer').innerText = `Tiempo: ${seconds}`;
+
+        timer = setInterval(() => {   //Establecer intervalo
+            seconds++;
+            document.getElementById('game-timer').innerText = `Tiempo: ${seconds/2}`;
+            console.log(`Contador segundos: ${seconds/2}`)
+        }, tiemporeaccion);
+    }
+
+    function endGame() {
+        clearInterval(timer);
+        gamesWon++;
+        document.getElementById('game-contador-de-juego').innerText = `Partidas ganadas: ${gamesWon}`;
+
+        alert(`¡Felicidades! Has ganado en ${seconds} segundos.`);
+
+        createBoard();
+    }
+
+    function initCard(card) {
+        card.addEventListener('click', flipcard)
+
+        var item = cardsPareja.pop()
+        if (item == undefined) return
+        card.children[0].classList.add(item.class)
+        card.innerHTML += item.card
+    }
+
+    document.querySelectorAll('.memory-card').forEach(initCard);
+
+    // document.addEventListener('contenido-cargado', createBoard);
 }
 
-function resetBoard() {
-    [firstcard, secondcard] = [null, null];
-    lockboard = false;
-}
-
-const cardsPareja = [
-    { card: "A", class: "purple" },
-    { card: "A", class: "purple" },
-    { card: "B", class: "amarillo" },
-    { card: "B", class: "amarillo" },
-    { card: "C", class: "naranja" },
-    { card: "C", class: "naranja" },
-    { card: "D", class: "azul" },
-    { card: "D", class: "azul" },
-    { card: "E", class: "rojo" },
-    { card: "E", class: "rojo" },
-    { card: "F", class: "verde" },
-    { card: "F", class: "verde" },
-    { card: "G", class: "gris" },
-    { card: "G", class: "gris" },
-    { card: "H", class: "rosa" },
-    { card: "H", class: "rosa" },
-];
-
-document.querySelectorAll('.memory-card').forEach((card) => {
-
-    card.addEventListener('click', flipcard)
-
-    var item = cardsPareja.pop()
-    if (item == undefined) return
-    card.children[0].classList.add(item.class)
-    card.innerHTML += item.card
-});
+juegoDeLasParejas()
